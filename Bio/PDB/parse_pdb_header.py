@@ -308,6 +308,14 @@ def _parse_pdb_header_list(header):
                     missing_res_info = _parse_remark_465(tail)
                     if missing_res_info:
                         dict['missing_residues'].append(missing_res_info)
+            elif hh.startswith("REMARK  99 ASTRAL"):
+                if tail:
+                    remark_99_keyval = tail.replace("ASTRAL ", "").split(': ')
+                    if type(remark_99_keyval) == list and len(remark_99_keyval) == 2:
+                        if 'astral' not in dict:
+                            dict['astral'] = {remark_99_keyval[0]: remark_99_keyval[1]}
+                        else:
+                            dict['astral'][remark_99_keyval[0]] = remark_99_keyval[1]
         else:
             # print(key)
             pass
