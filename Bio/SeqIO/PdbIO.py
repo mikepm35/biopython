@@ -494,7 +494,7 @@ def PdbSsIterator(handle, alphabet=single_letter_alphabet, title2ids=None):
     Uses the FastaIO parser as a template, except preserve all blank spaces.
     """
 
-    def SsFastaParser():
+    def SsFastaParser(handle):
         # Skip any text before the first record (e.g. blank lines, comments)
         # This matches the previous implementation where .readline() was used
         for line in handle:
