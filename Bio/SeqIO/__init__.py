@@ -435,6 +435,7 @@ _FormatToIterator = {"abi": AbiIO.AbiIterator,
                      "cif-atom": PdbIO.CifAtomIterator,
                      "pdb-atom": PdbIO.PdbAtomIterator,
                      "pdb-seqres": PdbIO.PdbSeqresIterator,
+                     "pdb-ss": PdbIO.PdbSsIterator,
                      "phd": PhdIO.PhdIterator,
                      "pir": PirIO.PirIterator,
                      "fastq": QualityIO.FastqPhredIterator,
@@ -627,6 +628,8 @@ def parse(handle, format, alphabet=None):
         mode = 'rb'
     else:
         mode = 'rU'
+
+    print('format', format)
 
     # Try and give helpful error messages:
     if not isinstance(format, basestring):

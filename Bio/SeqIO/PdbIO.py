@@ -484,6 +484,57 @@ def CifAtomIterator(handle):
         yield record
 
 
+def PdbSsIterator(handle, alphabet=single_letter_alphabet, title2ids=None):
+    """Iterate over sequences from RCSB PDB secondary structure fasta file.
+
+    Each PDB structure has two entries, the first is the residue sequence
+    and the second is the DSSP sequence.
+
+    Uses the FastaIO parser as a template, except preserve all blank spaces.
+    """
+
+    def SsFastaParser():
+        # Skip any text before the first record (e.g. blank lines, comments)
+        # This matches the previous implementation where .readline() was used
+        for line in handle:
+            if line[0] == '>':
+                title = line[1:]
+                break
+        else:   # no break encountered
+            return  # Premature end of file, or just empty?
+
+        # Main logic
+        # Note, maintains trailing whitespace, and any internal spaces
+        # (and any embedded \r which are possible in mangled files
+        # when not opened in universal read lines mode)
+        lines = []
+        for line in handle:
+            if line[0] == '>':
+                yield title, ''.join(lines).replace("\r", "")
+                lines = []
+                title = line[1:].rstrip()
+                continue
+            lines.append(line)
+
+        yield title, ''.join(lines).replace("\r", "")
+
+    if title2ids:
+        for title, sequence in SsFastaParser(handle):
+            id, name, descr = title2ids(title)
+            yield SeqRecord(Seq(sequence, alphabet),
+                            id=id, name=name, description=descr)
+    else:
+        for title, sequence in SsFastaParser(handle):
+            try:
+                first_word = title.split(None, 1)[0]
+            except IndexError:
+                assert not title, repr(title)
+                # Should we use SeqRecord default for no ID?
+                first_word = ""
+            yield SeqRecord(Seq(sequence, alphabet),
+                            id=first_word, name=first_word, description=title)
+
+
 if __name__ == '__main__':
     from Bio._utils import run_doctest
     run_doctest(verbose=0)
