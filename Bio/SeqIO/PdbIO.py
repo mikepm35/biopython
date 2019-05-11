@@ -9,6 +9,7 @@ import shutil
 import warnings
 
 from Bio import BiopythonParserWarning
+from Bio.Alphabet import single_letter_alphabet
 from Bio._py3k import StringIO
 from Bio.Alphabet import generic_protein
 from Bio.Data.SCOPData import protein_letters_3to1
