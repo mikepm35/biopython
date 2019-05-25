@@ -18,9 +18,12 @@ http://www6.appliedbiosystems.com/support/software_community/ABIF_File_Format.pd
 
 import datetime
 import struct
+import sys
+import warnings
 
 from os.path import basename
 
+from Bio import BiopythonParserWarning
 from Bio import Alphabet
 from Bio.Alphabet.IUPAC import ambiguous_dna, unambiguous_dna
 from Bio.Seq import Seq
@@ -331,6 +334,23 @@ for tag in _INSTRUMENT_SPECIFIC_TAGS.values():
     __global_tag_listing += tag.keys()
 
 
+def _get_string_tag(opt_bytes_value, default=None):
+    """Return the string value of the given an optional raw bytes tag value.
+
+    If the bytes value is None, return the given default value.
+
+    """
+    if opt_bytes_value is None:
+        return default
+    try:
+        return _bytes_to_string(opt_bytes_value)
+    except UnicodeDecodeError:
+        # If we are in this 'except' block, a `.decode` call must have been
+        # attempted, and so we must be on Python 3, which means opt_bytes_value
+        # is a byte string.
+        return opt_bytes_value.decode(encoding=sys.getdefaultencoding())
+
+
 def AbiIterator(handle, alphabet=None, trim=False):
     """Return an iterator for the Abi file format."""
     # raise exception is alphabet is not dna
@@ -379,7 +399,7 @@ def AbiIterator(handle, alphabet=None, trim=False):
 
         # PBAS2 is base-called sequence, only available in 3530
         if key == 'PBAS2':
-            seq = tag_data
+            seq = _bytes_to_string(tag_data)
             ambigs = 'KYWMRS'
             if alphabet is None:
                 if set(seq).intersection(ambigs):
@@ -388,10 +408,10 @@ def AbiIterator(handle, alphabet=None, trim=False):
                     alphabet = unambiguous_dna
         # PCON2 is quality values of base-called sequence
         elif key == 'PCON2':
-            qual = [ord(val) for val in tag_data]
-        # SMPL1 is sample id entered before sequencing run
+            qual = [ord(val) for val in _bytes_to_string(tag_data)]
+        # SMPL1 is sample id entered before sequencing run, it must be a string.
         elif key == 'SMPL1':
-            sample_id = tag_data
+            sample_id = _get_string_tag(tag_data)
         elif key in times:
             times[key] = tag_data
         else:
@@ -413,8 +433,9 @@ def AbiIterator(handle, alphabet=None, trim=False):
             file_name = basename(handle.name).replace('.fsa', '')
         except AttributeError:
             file_name = ""
-        sample_id = raw.get('LIMS1') or sample_id
-        description = raw.get('CTID1', '<unknown description>')
+
+        sample_id = _get_string_tag(raw.get('LIMS1'), sample_id)
+        description = _get_string_tag(raw.get('CTID1'), '<unknown description>')
         record = SeqRecord(Seq(''),
                            id=sample_id,
                            name=file_name,
@@ -480,8 +501,7 @@ def _abi_parse_header(header, handle):
             data_offset = tag_offset + 20
         handle.seek(data_offset)
         data = handle.read(data_size)
-        yield tag_name, tag_number, \
-            _parse_tag_data(elem_code, elem_num, data)
+        yield tag_name, tag_number, _parse_tag_data(elem_code, elem_num, data)
 
 
 def _abi_trim(seq_record):
@@ -560,7 +580,7 @@ def _parse_tag_data(elem_code, elem_num, raw_data):
 
         # account for different data types
         if elem_code == 2:
-            return _bytes_to_string(data)
+            return data
         elif elem_code == 10:
             return str(datetime.date(*data))
         elif elem_code == 11:
@@ -568,9 +588,9 @@ def _parse_tag_data(elem_code, elem_num, raw_data):
         elif elem_code == 13:
             return bool(data)
         elif elem_code == 18:
-            return _bytes_to_string(data[1:])
+            return data[1:]
         elif elem_code == 19:
-            return _bytes_to_string(data[:-1])
+            return data[:-1]
         else:
             return data
     else:

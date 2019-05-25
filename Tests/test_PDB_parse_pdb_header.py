@@ -8,10 +8,9 @@
 
 
 import unittest
-import warnings
 
 try:
-    import numpy
+    import numpy  # noqa F401
 except ImportError:
     from Bio import MissingPythonDependencyError
     raise MissingPythonDependencyError(
@@ -57,6 +56,14 @@ class ParseReal(unittest.TestCase):
         self.assertEqual(header["astral"]["Source-PDB"], "256b")
         self.assertEqual(header["astral"]["Region"], "a:")
         self.assertEqual(header["astral"]["ASTRAL-SPACI"], "0.72")
+
+    def test_parse_header_line(self):
+        """Unit test for parsing and converting fields in HEADER record."""
+        header = parse_pdb_header("PDB/header.pdb")
+        self.assertEqual(header['head'], 'structural genomics, unknown function')
+        self.assertEqual(header['idcode'], '3EFG')
+        self.assertEqual(header['deposition_date'], '2008-09-08')
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner(verbosity=2)

@@ -1,8 +1,9 @@
 # Copyright 2015 by Peter Cock.  All rights reserved.
 # Copyright 2015 by Antony Lee. All rights reserved.
-# This code is part of the Biopython distribution and governed by its
-# license.  Please see the LICENSE file that should have been included
-# as part of this package.
+# This file is part of the Biopython distribution and governed by your
+# choice of the "Biopython License Agreement" or the "BSD 3-Clause License".
+# Please see the LICENSE file that should have been included as part of this
+# package.
 
 """Testing online code for Bio.motifs (weblogo etc)."""
 import os
@@ -10,8 +11,6 @@ import unittest
 
 # We want to test these:
 from Bio import motifs
-from Bio.Alphabet.IUPAC import extended_dna, unambiguous_rna
-from Bio.Alphabet.IUPAC import extended_protein
 
 # In order to check any sequences returned
 from Bio.Seq import Seq
@@ -35,19 +34,19 @@ class TestotifWeblogo(unittest.TestCase):
         m.weblogo(os.devnull)
 
     def test_dna(self):
-        """Test Bio.Motif.weblogo with a DNA sequence."""
+        """Test Bio.motifs.weblogo with a DNA sequence."""
         self.check(["TACAA", "TACGC", "TACAC", "TACCC",
-                    "AACCC", "AATGC", "AATGC"], extended_dna)
+                    "AACCC", "AATGC", "AATGC"], 'GATCBDSW')
 
     def test_rna(self):
-        """Test Bio.Motif.weblogo with an RNA sequence."""
+        """Test Bio.motifs.weblogo with an RNA sequence."""
         self.check(["UACAA", "UACGC", "UACAC", "UACCC",
-                    "AACCC", "AAUGC", "AAUGC"], unambiguous_rna)
+                    "AACCC", "AAUGC", "AAUGC"], 'GAUC')
 
     def test_protein(self):
-        """Test Bio.Motif.weblogo with a protein sequence."""
+        """Test Bio.motifs.weblogo with a protein sequence."""
         self.check(["ACDEG", "AYCRN", "HYLID", "AYHEL",
-                    "ACDEH", "AYYRN", "HYIID"], extended_protein)
+                    "ACDEH", "AYYRN", "HYIID"], 'ACDEFGHIKLMNPQRSTVWYBXZJUO')
 
 
 if __name__ == "__main__":
