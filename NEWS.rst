@@ -55,6 +55,9 @@ to conform to the ``SeqRecord`` interface. In this case, the parser will
 attempt to decode using ``utf-8`` and fall back to the system encoding if that
 fails. This change affects Python 3 only.
 
+``Bio.PDB`` has been updated to support parsing REMARK 99 header entries from
+PDB-style Astral files.
+
 Additionally, a number of small bugs and typos have been fixed with further
 additions to the test suite, and there has been further work to follow the
 Python PEP8, PEP257 and best practice standard coding style.
@@ -75,6 +78,7 @@ possible, especially the following contributors:
 - Lenna Peterson
 - Markus Piotrowski
 - Micky Yun Chan (first contribution)
+- Mike Moritz (first contribution)
 - Nick Negretti
 - Peter Cock
 - Ralf Stephan
