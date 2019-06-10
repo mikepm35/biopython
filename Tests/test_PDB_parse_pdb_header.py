@@ -48,13 +48,6 @@ class ParseReal(unittest.TestCase):
         self.assertEqual(info, {"model": None, "res_name": "A",
                                 "chain": "2", "ssseq": 11, "insertion": None})
 
-    def test_parse_header_line(self):
-        """Unit test for parsing and converting fields in HEADER record."""
-        header = parse_pdb_header("PDB/header.pdb")
-        self.assertEqual(header['head'], 'structural genomics, unknown function')
-        self.assertEqual(header['idcode'], '3EFG')
-        self.assertEqual(header['deposition_date'], '2008-09-08')
-
     def test_parse_pdb_with_remark_99(self):
         """Tests that parse_pdb_header can identify REMARK 99 ASTRAL entries."""
         header = parse_pdb_header("PDB/d256ba_.ent")
@@ -63,6 +56,14 @@ class ParseReal(unittest.TestCase):
         self.assertEqual(header["astral"]["Source-PDB"], "256b")
         self.assertEqual(header["astral"]["Region"], "a:")
         self.assertEqual(header["astral"]["ASTRAL-SPACI"], "0.72")
+
+    def test_parse_header_line(self):
+        """Unit test for parsing and converting fields in HEADER record."""
+        header = parse_pdb_header("PDB/header.pdb")
+        self.assertEqual(header['head'], 'structural genomics, unknown function')
+        self.assertEqual(header['idcode'], '3EFG')
+        self.assertEqual(header['deposition_date'], '2008-09-08')
+
 
 if __name__ == '__main__':
     runner = unittest.TextTestRunner(verbosity=2)
