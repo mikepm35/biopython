@@ -9,6 +9,7 @@ import shutil
 import warnings
 
 from Bio import BiopythonParserWarning
+from Bio.Alphabet import single_letter_alphabet
 from Bio._py3k import StringIO
 from Bio.Alphabet import generic_protein
 from Bio.Data.SCOPData import protein_letters_3to1
@@ -493,7 +494,7 @@ def PdbSsIterator(handle, alphabet=single_letter_alphabet, title2ids=None):
     Uses the FastaIO parser as a template, except preserve all blank spaces.
     """
 
-    def SsFastaParser():
+    def SsFastaParser(handle):
         # Skip any text before the first record (e.g. blank lines, comments)
         # This matches the previous implementation where .readline() was used
         for line in handle:

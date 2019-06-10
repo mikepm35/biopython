@@ -629,8 +629,6 @@ def parse(handle, format, alphabet=None):
     else:
         mode = 'rU'
 
-    print('format', format)
-
     # Try and give helpful error messages:
     if not isinstance(format, basestring):
         raise TypeError("Need a string for the file format (lower case)")
