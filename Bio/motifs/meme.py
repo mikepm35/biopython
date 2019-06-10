@@ -7,7 +7,6 @@
 
 from __future__ import print_function
 
-from Bio.Alphabet import IUPAC
 from Bio import Seq
 from Bio import motifs
 
@@ -85,6 +84,8 @@ class Motif(motifs.Motif):
         self.evalue = 0.0
         self.num_occurrences = 0
         self.name = None
+        self.id = None
+        self.alt_id = None
 
 
 class Instance(Seq.Seq):
@@ -189,11 +190,11 @@ def __read_alphabet(record, handle):
     line = line.strip()
     line = line.replace('ALPHABET= ', '')
     if line == 'ACGT':
-        al = IUPAC.unambiguous_dna
+        al = 'ACGT'
     elif line == 'ACGU':
-        al = IUPAC.unambiguous_rna
+        al = 'ACGU'
     else:
-        al = IUPAC.protein
+        al = 'ACDEFGHIKLMNPQRSTVWY'
     record.alphabet = al
 
 
